@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Default
-DIR_LIST=dir_list.txt
+DIR_LIST=../misc/dir_list.txt
 
 while [ $# -gt 0 ]; do
   case "$1" in

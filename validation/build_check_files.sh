@@ -4,7 +4,7 @@
 ##############################
 
 #Default
-DIR_LIST=dir_list.txt
+DIR_LIST=../misc/dir_list.txt
 
 #Hadoop Version (default 2)
 HADOOP_VER=2
