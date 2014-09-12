@@ -17,7 +17,7 @@ DELETE="no"
 if [ ! -d ../logs ]; then
     mkdir ../logs
 fi
-DIR_LIST=../misc/dir_list.txt
+DIR_LIST_FILE=../misc/dir_list.txt
 
 TRANSFER_AUDIT_LOG=../logs/transfer.`date +'%Y%m%d-%H%M'`.log
 
