@@ -54,8 +54,8 @@ if [ "$DIR_LIST" != "" ]; then
 
             echo "Processing base files for $DIRECTORY"
 
-            HDP_ROOT="$SECTION/hdp/"$DIRECTORY".txt"
-            MAPR_ROOT="$SECTION/mapr/"$DIRECTORY".txt"
+            HDP_ROOT="hdp/"$SECTION"/"$DIRECTORY".txt"
+            MAPR_ROOT="mapr/"$SECTION"/"$DIRECTORY".txt"
 
             if [ ! -f $HDP_ROOT.gz ] || [ ! -f $MAPR_ROOT.gz ]
             then
@@ -77,21 +77,21 @@ if [ "$DIR_LIST" != "" ]; then
                 # Filter fields and sort results by file
                 awk < "$MAPR_ROOT".fo '{ print $1, $3, $4, $5, $8 }' | sort -k 5 > $MAPR_ROOT".prep"
 
-                if [ ! -d $SECTION"/"results ]
+                if [ ! -d results"/"$SECTION ]
                 then
-                    mkdir $SECTION"/"results
+                    mkdir -p results"/"$SECTION
                 fi
-                echo 'Building Diff File: '$SECTION'/results/'$DIRECTORY'_chk_results.txt'
-                diff $HDP_ROOT".prep" $MAPR_ROOT".prep" > $SECTION"/results/"$DIRECTORY"_chk_results.txt"
+                echo 'Building Diff File: results/'$SECTION'/'$DIRECTORY'_chk_results.txt'
+                diff $HDP_ROOT".prep" $MAPR_ROOT".prep" > "results/"$SECTION"/"$DIRECTORY"_chk_results.txt"
 
-                GZIP_RESULT_FILE=$SECTION"/results/"$DIRECTORY"_chk_results.txt.gz"
+                GZIP_RESULT_FILE="results/"$SECTION"/"$DIRECTORY"_chk_results.txt.gz"
                 if [ -f $GZIP_RESULT_FILE ];
                 then
                     echo "Found previous diff... removing.."
                     rm -f $GZIP_RESULT_FILE
                 fi
 
-                gzip $SECTION"/results/"$DIRECTORY"_chk_results.txt"
+                gzip "results/"$SECTION"/"$DIRECTORY"_chk_results.txt"
 
                 # Cleanup
                 rm -f $HDP_ROOT".prep" $MAPR_ROOT".prep" "$HDP_ROOT".fo "$MAPR_ROOT".fo

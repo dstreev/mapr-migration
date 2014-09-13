@@ -49,10 +49,10 @@ if [ "$VENDOR" == "" ]; then
     exit -1
 else
 
-    if [ -d $VENDOR ]; then
-        rm -rf $VENDOR
+    if [ -d $VENDOR"/"$SECTION ]; then
+        rm -rf $VENDOR"/"$SECTION
     fi
-    mkdir $VENDOR
+    mkdir -p $VENDOR"/"$SECTION
     if [ "$VENDOR" == "mapr" ]; then
         HADOOP_VER=1
     fi
@@ -80,18 +80,18 @@ if [ "$DIR_LIST" != "" ]; then
 
             echo "Building Directory listing for $line"
             if [ "$HADOOP_VER" == "1" ]; then
-                HDFS_LSR_CMD="hadoop fs -lsr $line > $SECTION/$VENDOR/$COMPARE_FILENAME.txt"
+                HDFS_LSR_CMD="hadoop fs -lsr $line > $VENDOR/$SECTION/$COMPARE_FILENAME.txt"
             else
-                HDFS_LSR_CMD="hdfs dfs -ls -R $line > $SECTION/$VENDOR/$COMPARE_FILENAME.txt"
+                HDFS_LSR_CMD="hdfs dfs -ls -R $line > $VENDOR/$SECTION/$COMPARE_FILENAME.txt"
             fi
             echo "Running command: $HDFS_LSR_CMD"
             eval "$HDFS_LSR_CMD"
-            GZIP_COMPARE_FILE=$SECTION"/"$VENDOR"/"$COMPARE_FILENAME".txt.gz"
+            GZIP_COMPARE_FILE=$VENDOR"/"$SECTION"/"$COMPARE_FILENAME".txt.gz"
             if [ -f $GZIP_COMPARE_FILE ]; then
                 echo "Found previous compare file... removing.."
                 rm -f $GZIP_COMPARE_FILE
             fi
-            eval "gzip $SECTION/$VENDOR/$COMPARE_FILENAME.txt"
+            eval "gzip $VENDOR/$SECTION/$COMPARE_FILENAME.txt"
         fi
     done
 
