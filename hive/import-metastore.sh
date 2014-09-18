@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd `dirname $0`
+
 while [ $# -gt 0 ]; do
   case "$1" in
     --target-db)
@@ -14,7 +16,7 @@ while [ $# -gt 0 ]; do
       ;;
     --target-namenode)
       shift
-      $NAMENODE=$1
+      NAMENODE=$1
       shift
       ;;
     --help)
@@ -44,12 +46,14 @@ HOSTNAME=`echo $NAMENODE | sed 's/\./\\./g'`
 TARGET=hdfs://$HOSTNAME
 SED_CMD='s!$SOURCE!$TARGET!g'
 
-eval "sed $SED_CMD $DUMP_FILE > $DUMP_FILE.new"
+eval "sed $SED_CMD $MYSQL_DUMP_FILE > $MYSQL_DUMP_FILE.new"
 
 # Import dump file
 mysql -u root -e "drop database $TARGET_DB"
 
-mysql -u root < $DUMP_FILE.new
+mysql -u root -e "create database $TARGET_DB"
+
+mysql -u root $TARGET_DB < $DUMP_FILE.new
 
 pushd /usr/lib/hive/scripts/metastore/upgrade/mysql
 
@@ -58,6 +62,9 @@ UPGRADE_SCRIPT=upgrade-0.12.0-to-0.13.0.mysql.sql
 mysql -u root $TARGET_DB < $UPGRADE_SCRIPT
 
 popd
+
+# Fix behavioral change with 'decimal' type declared in Hive 0.11/0.12.
+mysql -u root $TARGET_DB < decimal_pre-13_fix.sql
 
 # SQL to grant rights to Database Tables.
 mysql -u root -e "GRANT ALL ON $TARGET_DB.* TO 'hiveuser'@'%'" $TARGET_DB

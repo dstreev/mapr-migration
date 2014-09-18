@@ -36,11 +36,15 @@ fi
 
 if [ "$DIR_LIST" != "" ]; then
     # Remove old results
-    if [ -d $SECTION"/"results ]; then
-      rm -rf $SECTION"/"results
+    if [ -d "results/$SECTION" ]; then
+      rm -rf results/$SECTION
     fi
 
-    exec< ${DIR_LIST}
+    SED_PATTERN='1,/'$SECTION'/d;/\[/,$d;/^$/d;p'
+
+    exec< <(sed -n $SED_PATTERN $DIR_LIST)
+
+    #exec< ${DIR_LIST}
 
     while read line ; do
         # Skip Comment lines

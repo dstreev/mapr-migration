@@ -1,8 +1,17 @@
-#/bin/bash
+#!/bin/bash
 
 # distp from Mapr to HDP (root user)
 # Make adjustments to the protocol_prefix.sh file to control source and dest. filesystems.
 # Get the SOURCE and TARGET protocol prefix's
+
+if [ `whoami` != "root" ]; then
+    echo "Should be run as root, since this is the 'control' superuser between the two clusters"
+    exit -1
+fi
+
+# Change to the shells directory.
+cd=`dirname $0`
+
 if [ -f ../misc/protocol_prefix.sh ]; then
 . ../misc/protocol_prefix.sh
 else
@@ -10,32 +19,10 @@ else
     exit -1
 fi
 
-while [ $# -gt 0 ]; do
-  case "$1" in
-    --section)
-      shift
-      SECTION=$1
-      shift
-      ;;
-    --help)
-      echo "Usage: $0 --section <section>
-      exit -1
-      ;;
-    *)
-      break
-      ;;
-  esac
-done
+hadoop distcp -i -pugp -delete -update $SOURCE/user/root/validation/mapr $TARGET/user/root/validation/mapr
 
-if [ "$SECTION" == "" ]; then
-  echo "Need to specify a section to transfer.  This is from the "build_check_files.sh" run."
-  exit -1
+if [ -d mapr ]; then
+    rm -rf mapr
 fi
 
-hadoop distcp -i -pugp -delete -update $SOURCE/user/root/validation/$SECTON $TARGET/user/root/validation/$SECTION
-
-if [ -d $SECTION/mapr ]; then
-  rm -rf $SECTION/mapr
-fi
-
-hdfs dfs -get validation/$SECTION/mapr .
+hdfs dfs -get validation/mapr .
