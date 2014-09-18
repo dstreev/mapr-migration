@@ -53,7 +53,7 @@ mysql -u root -e "drop database $TARGET_DB"
 
 mysql -u root -e "create database $TARGET_DB"
 
-mysql -u root $TARGET_DB < $DUMP_FILE.new
+mysql -u root $TARGET_DB < $MYSQL_DUMP_FILE.new
 
 pushd /usr/lib/hive/scripts/metastore/upgrade/mysql
 
